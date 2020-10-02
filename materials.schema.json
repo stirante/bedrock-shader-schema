@@ -2,6 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "definitions": {
     "library": {
+      "primitiveMode": {
+        "type": "string",
+        "enum": [
+          "None",
+          "QuadList",
+          "TriangleList",
+          "LineList",
+          "Line"
+        ]
+      },
       "stencilOperation": {
         "type": "string",
         "enum": [
@@ -39,28 +49,28 @@
           "NotEqual"
         ]
       },
-      "blendSrc": {
+      "blending": {
         "type": "string",
-        "description": "Specifies how the red, green, blue, and alpha source blending factors are computed.",
         "enum": [
           "DestColor",
+          "DestAlpha",
+          "SourceColor",
           "One",
           "OneMinusDestAlpha",
           "OneMinusDestColor",
-          "SourceAlpha",
-          "Zero"
-        ]
-      },
-      "blendDst": {
-        "type": "string",
-        "description": "Specifies how the red, green, blue, and alpha destination blending factors are computed.",
-        "enum": [
-          "One",
           "OneMinusSrcAlpha",
           "OneMinusSrcColor",
           "SourceAlpha",
           "Zero"
         ]
+      },
+      "blendSrc": {
+        "description": "Specifies how the red, green, blue, and alpha source blending factors are computed.",
+        "$ref": "#/definitions/library/blending"
+      },
+      "blendDst": {
+        "description": "Specifies how the red, green, blue, and alpha destination blending factors are computed.",
+        "$ref": "#/definitions/library/blending"
       },
       "vertexField": {
         "type": "object",
@@ -109,6 +119,10 @@
         "type": "string",
         "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
       },
+      "geometryShader": {
+        "type": "string",
+        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
+      },
       "fragmentShader": {
         "type": "string",
         "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
@@ -134,7 +148,6 @@
           "type": "string",
           "enum": [
             "Blending",
-            "DisableAlphaWrite",
             "DisableAlphaWrite",
             "DisableColorWrite",
             "DisableCulling",
@@ -269,6 +282,9 @@
       },
       "stencilWriteMask": {
         "type": "integer"
+      },
+      "primitiveMode": {
+        "$ref": "#/definitions/library/primitiveMode"
       },
       "frontFace": {
         "$ref": "#/definitions/library/face"
