@@ -8,6 +8,7 @@
           "None",
           "QuadList",
           "TriangleList",
+          "TriangleStrip",
           "LineList",
           "Line"
         ]
@@ -34,6 +35,9 @@
           },
           "stencilPassOp": {
             "$ref": "#/definitions/library/stencilOperation"
+          },
+          "depthStencilFaceName": {
+            "type": "string"
           }
         }
       },
@@ -47,6 +51,38 @@
           "Greater",
           "GreaterEqual",
           "NotEqual"
+        ]
+      },
+      "renderTargetFormats": {
+        "type": "string",
+        "enum": [
+          "UNKNOWN_TEXTURE_FORMAT",
+          "R32G32B32A32_FLOAT",
+          "R16G16B16A16_FLOAT",
+          "R16G16B16A16_UNORM",
+          "R32G32_FLOAT",
+          "R8G8B8A8_UNORM",
+          "R8G8B8A8_UNORM_SRGB",
+          "R10G10B10A2_UNORM",
+          "R16G16_UNORM",
+          "R16G16_UINT",
+          "D32_FLOAT",
+          "R32_FLOAT",
+          "R32_UINT",
+          "R24G8_TYPELESS",
+          "D24_UNORM_S8_UINT",
+          "R24_UNORM_X8_TYPELESS",
+          "D16_UNORM",
+          "R8_UNORM",
+          "R8_UINT",
+          "A8_UNORM",
+          "BC3_UNORM",
+          "R5G6B5_UNORM",
+          "R5G5B5A1_UNORM",
+          "B8G8R8A8_UNORM",
+          "B8G8R8A8_UNORM_SRGB",
+          "BC7_UNORM",
+          "R4G4B4A4_UNORM"
         ]
       },
       "blending": {
@@ -63,14 +99,6 @@
           "SourceAlpha",
           "Zero"
         ]
-      },
-      "blendSrc": {
-        "description": "Specifies how the red, green, blue, and alpha source blending factors are computed.",
-        "$ref": "#/definitions/library/blending"
-      },
-      "blendDst": {
-        "description": "Specifies how the red, green, blue, and alpha destination blending factors are computed.",
-        "$ref": "#/definitions/library/blending"
       },
       "vertexField": {
         "type": "object",
@@ -108,37 +136,18 @@
               "Clamp",
               "Repeat"
             ]
+          },
+          "shaderStage": {
+            "type": "string",
+            "enum": [
+              "Vertex",
+              "Pixel",
+              "Geometry"
+            ]
+          },
+          "comparisonFunc": {
+            "$ref": "#/definitions/library/functions"
           }
-        }
-      },
-      "vertexShader": {
-        "type": "string",
-        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
-      },
-      "vrGeometryShader": {
-        "type": "string",
-        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
-      },
-      "geometryShader": {
-        "type": "string",
-        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
-      },
-      "fragmentShader": {
-        "type": "string",
-        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
-      },
-      "vertexFields": {
-        "type": "array",
-        "description": "A list of fields, that are passed to the vertex shader.",
-        "items": {
-          "$ref": "#/definitions/library/vertexField"
-        }
-      },
-      "+defines": {
-        "type": "array",
-        "description": "A list of #define directives to add",
-        "items": {
-          "type": "string"
         }
       },
       "+states": {
@@ -158,13 +167,6 @@
             "InvertCulling",
             "Wireframe"
           ]
-        }
-      },
-      "-defines": {
-        "type": "array",
-        "description": "A list of #define directives to remove",
-        "items": {
-          "type": "string"
         }
       },
       "variant": {
@@ -188,16 +190,23 @@
     "material": {
       "type": "object",
       "vertexShader": {
-        "$ref": "#/definitions/library/vertexShader"
+        "type": "string",
+        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
       },
       "vrGeometryShader": {
-        "$ref": "#/definitions/library/vrGeometryShader"
+        "type": "string",
+        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
       },
       "fragmentShader": {
-        "$ref": "#/definitions/library/fragmentShader"
+        "type": "string",
+        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
       },
       "vertexFields": {
-        "$ref": "#/definitions/library/vertexFields"
+        "type": "array",
+        "description": "A list of fields, that are passed to the vertex shader.",
+        "items": {
+          "$ref": "#/definitions/library/vertexField"
+        }
       },
       "variants": {
         "type": "array",
@@ -241,19 +250,37 @@
         }
       },
       "blendSrc": {
-        "$ref": "#/definitions/library/blendSrc"
+        "description": "Specifies how the red, green, blue, and alpha source blending factors are computed.",
+        "$ref": "#/definitions/library/blending"
       },
       "blendDst": {
-        "$ref": "#/definitions/library/blendDst"
+        "description": "Specifies how the red, green, blue, and alpha destination blending factors are computed.",
+        "$ref": "#/definitions/library/blending"
+      },
+      "alphaSrc": {
+        "description": "Specifies how the red, green, blue, and alpha source blending factors are computed.",
+        "$ref": "#/definitions/library/blending"
+      },
+      "alphaDst": {
+        "description": "Specifies how the red, green, blue, and alpha destination blending factors are computed.",
+        "$ref": "#/definitions/library/blending"
       },
       "+defines": {
-        "$ref": "#/definitions/library/+defines"
+        "type": "array",
+        "description": "A list of #define directives to add",
+        "items": {
+          "type": "string"
+        }
       },
       "+states": {
         "$ref": "#/definitions/library/+states"
       },
       "-defines": {
-        "$ref": "#/definitions/library/-defines"
+        "type": "array",
+        "description": "A list of #define directives to remove",
+        "items": {
+          "type": "string"
+        }
       },
       "depthBias": {
         "type": "number"
@@ -291,6 +318,15 @@
       },
       "backFace": {
         "$ref": "#/definitions/library/face"
+      },
+      "renderTargetFormats": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/library/renderTargetFormats"
+        }
+      },
+      "isAnimatedTexture": {
+        "type": "boolean"
       }
     }
   }
