@@ -105,7 +105,7 @@
         "properties": {
           "field": {
             "type": "string",
-            "description": "Field name."
+            "description": "Identifier for the vertex field."
           }
         }
       },
@@ -115,11 +115,13 @@
         "properties": {
           "samplerIndex": {
             "type": "integer",
-            "description": "Texture index."
+            "minimum": 0,
+            "maximum": 7,
+            "description": "Sampler slot index (0-7)."
           },
           "textureFilter": {
             "type": "string",
-            "description": "Texture mapping option.",
+            "description": "Texture filtering mode.",
             "enum": [
               "Bilinear",
               "MipMapBilinear",
@@ -131,7 +133,7 @@
           },
           "textureWrap": {
             "type": "string",
-            "description": "Behavior, when accessing coordinates outside of the texture.",
+            "description": "Behavior when accessing coordinates outside of the texture.",
             "enum": [
               "Clamp",
               "Repeat"
@@ -152,7 +154,6 @@
       },
       "+states": {
         "type": "array",
-        "description": "A list of states to enable",
         "items": {
           "type": "string",
           "enum": [
@@ -173,160 +174,180 @@
         "type": "object",
         "properties": {
           "vertexFields": {
-            "$ref": "#/definitions/library/vertexFields"
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/library/vertexField"
+            }
           },
           "+defines": {
-            "$ref": "#/definitions/library/+defines"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "+states": {
+            "description": "A list of states to enable",
+            "$ref": "#/definitions/library/+states"
+          },
+          "-states": {
+            "description": "A list of states to disable",
             "$ref": "#/definitions/library/+states"
           },
           "-defines": {
-            "$ref": "#/definitions/library/-defines"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
     },
     "material": {
       "type": "object",
-      "vertexShader": {
-        "type": "string",
-        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
-      },
-      "vrGeometryShader": {
-        "type": "string",
-        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
-      },
-      "fragmentShader": {
-        "type": "string",
-        "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added"
-      },
-      "vertexFields": {
-        "type": "array",
-        "description": "A list of fields, that are passed to the vertex shader.",
-        "items": {
-          "$ref": "#/definitions/library/vertexField"
-        }
-      },
-      "variants": {
-        "type": "array",
-        "description": "An explanation about the purpose of this instance.",
-        "items": {
-          "anyOf": [
-            {
-              "type": "object",
-              "description": "An explanation about the purpose of this instance.",
-              "properties": {
-                "skinning": {
-                  "$ref": "#/definitions/library/variant"
+      "properties": {
+        "vertexShader": {
+          "type": "string",
+          "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added."
+        },
+        "vrGeometryShader": {
+          "type": "string",
+          "description": "Path to the geometry shader for VR, relative to glsl/hlsl folder."
+        },
+        "fragmentShader": {
+          "type": "string",
+          "description": "Path to the shader relative to glsl/hlsl folder. For hlsl shader, the .hlsl suffix is added."
+        },
+        "vertexFields": {
+          "type": "array",
+          "description": "A list of fields that are passed to the vertex shader.",
+          "items": {
+            "$ref": "#/definitions/library/vertexField"
+          }
+        },
+        "variants": {
+          "type": "array",
+          "description": "Variants for the material, e.g. skinning variations.",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "skinning": {
+                    "$ref": "#/definitions/library/variant"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "skinning_color": {
+                    "$ref": "#/definitions/library/variant"
+                  }
                 }
               }
-            },
-            {
-              "type": "object",
-              "description": "An explanation about the purpose of this instance.",
-              "properties": {
-                "skinning_color": {
-                  "$ref": "#/definitions/library/variant"
-                }
-              }
-            }
+            ]
+          }
+        },
+        "msaaSupport": {
+          "type": "string",
+          "description": "Multisample anti-aliasing support.",
+          "enum": [
+            "Both",
+            "MSAA",
+            "NonMSAA"
           ]
+        },
+        "+samplerStates": {
+          "type": "array",
+          "description": "List of sampler state definitions.",
+          "items": {
+            "$ref": "#/definitions/library/samplerState"
+          }
+        },
+        "blendSrc": {
+          "description": "Specifies how the source blending factor is computed.",
+          "$ref": "#/definitions/library/blending"
+        },
+        "blendDst": {
+          "description": "Specifies how the destination blending factor is computed.",
+          "$ref": "#/definitions/library/blending"
+        },
+        "alphaSrc": {
+          "description": "Specifies how the source alpha blending factor is computed.",
+          "$ref": "#/definitions/library/blending"
+        },
+        "alphaDst": {
+          "description": "Specifies how the destination alpha blending factor is computed.",
+          "$ref": "#/definitions/library/blending"
+        },
+        "+defines": {
+          "type": "array",
+          "description": "A list of #define directives to add.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "+states": {
+          "$ref": "#/definitions/library/+states"
+        },
+        "-defines": {
+          "type": "array",
+          "description": "A list of #define directives to remove.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "depthBias": {
+          "type": "number",
+          "description": "Depth bias value for rasterizer state."
+        },
+        "slopeScaledDepthBias": {
+          "type": "number",
+          "description": "Slope-scaled depth bias value."
+        },
+        "depthFunc": {
+          "description": "Specifies the depth comparison function.",
+          "$ref": "#/definitions/library/functions"
+        },
+        "stencilRefOverride": {
+          "type": "integer",
+          "description": "Override value for stencil reference."
+        },
+        "stencilRef": {
+          "type": "integer",
+          "description": "Default stencil reference value."
+        },
+        "stencilReadMask": {
+          "type": "integer",
+          "description": "Mask applied when reading stencil data."
+        },
+        "stencilWriteMask": {
+          "type": "integer",
+          "description": "Mask applied when writing stencil data."
+        },
+        "primitiveMode": {
+          "$ref": "#/definitions/library/primitiveMode"
+        },
+        "frontFace": {
+          "$ref": "#/definitions/library/face"
+        },
+        "backFace": {
+          "$ref": "#/definitions/library/face"
+        },
+        "renderTargetFormats": {
+          "type": "array",
+          "description": "An array where each element is an array of texture format strings for a render target.",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/library/renderTargetFormats"
+            }
+          }
+        },
+        "isAnimatedTexture": {
+          "type": "boolean",
+          "description": "Flag indicating if the texture is animated."
         }
-      },
-      "msaaSupport": {
-        "type": "string",
-        "description": "Multisample anti-aliasing support.",
-        "enum": [
-          "Both",
-          "MSAA",
-          "NonMSAA"
-        ]
-      },
-      "+samplerStates": {
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/library/samplerState"
-        }
-      },
-      "blendSrc": {
-        "description": "Specifies how the red, green, blue, and alpha source blending factors are computed.",
-        "$ref": "#/definitions/library/blending"
-      },
-      "blendDst": {
-        "description": "Specifies how the red, green, blue, and alpha destination blending factors are computed.",
-        "$ref": "#/definitions/library/blending"
-      },
-      "alphaSrc": {
-        "description": "Specifies how the red, green, blue, and alpha source blending factors are computed.",
-        "$ref": "#/definitions/library/blending"
-      },
-      "alphaDst": {
-        "description": "Specifies how the red, green, blue, and alpha destination blending factors are computed.",
-        "$ref": "#/definitions/library/blending"
-      },
-      "+defines": {
-        "type": "array",
-        "description": "A list of #define directives to add",
-        "items": {
-          "type": "string"
-        }
-      },
-      "+states": {
-        "$ref": "#/definitions/library/+states"
-      },
-      "-defines": {
-        "type": "array",
-        "description": "A list of #define directives to remove",
-        "items": {
-          "type": "string"
-        }
-      },
-      "depthBias": {
-        "type": "number"
-      },
-      "slopeScaledDepthBias": {
-        "type": "number"
-      },
-      "depthBiasOGL": {
-        "type": "number"
-      },
-      "slopeScaledDepthBiasOGL": {
-        "type": "number"
-      },
-      "depthFunc": {
-        "description": "Specifies the depth comparison function.",
-        "$ref": "#/definitions/library/functions"
-      },
-      "stencilRefOverride": {
-        "type": "integer"
-      },
-      "stencilRef": {
-        "type": "integer"
-      },
-      "stencilReadMask": {
-        "type": "integer"
-      },
-      "stencilWriteMask": {
-        "type": "integer"
-      },
-      "primitiveMode": {
-        "$ref": "#/definitions/library/primitiveMode"
-      },
-      "frontFace": {
-        "$ref": "#/definitions/library/face"
-      },
-      "backFace": {
-        "$ref": "#/definitions/library/face"
-      },
-      "renderTargetFormats": {
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/library/renderTargetFormats"
-        }
-      },
-      "isAnimatedTexture": {
-        "type": "boolean"
       }
     }
   }
